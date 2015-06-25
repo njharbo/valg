@@ -9,16 +9,15 @@ border=89.5;
 koalitions=nchoosek([1:1:numberparties], koalizationsize);
 koalitionsvektor=zeros(length(koalitions),length(koalitions(1,:)));
 
-S
-DF
-V
-EHL
-I
-?
-B
-SF
-C
-
+%S
+%DF
+%V
+%EHL
+%I
+%?
+%B
+%SF
+%C
 
 mandater=[47
 37
@@ -47,9 +46,6 @@ nj=koalitionsvektor*mandater;
 start=[koalitionsvektor(summandater(summandater(:,2)>border),:), nj(summandater(summandater(:,2)>border),:)]
 
 %check if we can remove one party and still have majority
-
-
-
 perm=perms([1:numberparties]);
 
 for n=1:length(perm(:,1))
