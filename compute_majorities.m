@@ -6,9 +6,6 @@ numberparties=9;
 koalizationsize=7;
 border=89.5;
 
-koalitions=nchoosek([1:1:numberparties], koalizationsize);
-koalitionsvektor=zeros(length(koalitions),length(koalitions(1,:)));
-
 %S
 %DF
 %V
@@ -30,46 +27,52 @@ mandater=[47
 6
 ]
 
-
+%Forms all possible coalitions
+koalitions=nchoosek([1:1:numberparties], koalizationsize);
+koalitionsvektor=zeros(length(koalitions),length(koalitions(1,:)));
 for i=1:length(koalitions)
     for k=1:length(koalitions(1,:))
     koalitionsvektor(i, koalitions(i, k))=1;
     end
 end
-    
+
+%Number of seats in each koalition
 summandater=[(1:1:length(koalitions))', koalitionsvektor*mandater];
+temp=koalitionsvektor*mandater;
+%maj=summandater(summandater(:,2)>border);
 
-maj=summandater(summandater(:,2)>border);
+%Matrix with coalition and number of seats in each, if the coalition is
+%large enough
+start=[koalitionsvektor(summandater(summandater(:,2)>border),:), temp(summandater(summandater(:,2)>border),:)]
 
-nj=koalitionsvektor*mandater;
-
-start=[koalitionsvektor(summandater(summandater(:,2)>border),:), nj(summandater(summandater(:,2)>border),:)]
-
-%check if we can remove one party and still have majority
+% For each of other found coaltions check if we can remove one or more
+% parti and still have majority
+% Conduct this check in all possible orders of parties
+check if we can remove one party and still have majority
 perm=perms([1:numberparties]);
-
 for n=1:length(perm(:,1))
-    hej=start;
-for k=1:5
-for i=1:length(hej(:,1))
-    for j=1:(length(hej(1,:))-1)
-        if hej(i,perm(n,j))==1
-        if hej(i,length(hej(i,:)))-mandater(perm(n,j))>border
-            hej(i,perm(n,j))=0;
-            hej(i,length(hej(1,:)))=hej(i,length(hej(1,:)))-mandater(perm(n,j));
-        end
+    temp2=start;
+for k=1:koalizationsize
+for i=1:length(temp2(:,1))
+    for j=1:(length(temp2(1,:))-1)
+        if temp2(i,perm(n,j))==1
+            if temp2(i,length(temp2(i,:)))-mandater(perm(n,j))>border
+                temp2(i,perm(n,j))=0;
+                temp2(i,length(temp2(1,:)))=temp2(i,length(temp2(1,:)))-mandater(perm(n,j));
+            end
         end
     end
 end
 end
-hans(:,:,n)=transpose(hej);
+cleaned_coaltion(:,:,n)=transpose(temp2);
 n
 end
 
-john=transpose(reshape(hans, length(hans(:,1,1)),length(hans(1,:,1))*length(hans(1,1,:))));
+%Put found coaltions on right form
+%And clean for duplets
+temp3=transpose(reshape(cleaned_coaltion, length(cleaned_coaltion(:,1,1)),length(cleaned_coaltion(1,:,1))*length(cleaned_coaltion(1,1,:))));
+data=unique(temp3, 'rows')
 
-data=unique(john, 'rows')
+save data_dk_na.mat
 
-save data_dk.mat
-
-xlswrite('ft.xls', save, 'flertal', 'B2')
+xlswrite('ft_na.xls', data, 'flertal', 'B2')
