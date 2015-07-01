@@ -15,40 +15,50 @@ mandater=[47
 numberparties=length(mandater);
 border=90;
 
-%Form all possible coalitions
-koalitions=zeros(1,numberparties)
+%Form all possible coalitions on binary form
 n=1
-koalitions(1:9,1)=nchoosek([1:1:numberparties], n)
-for n=2:1:numberparties-1
-dim1=length(koalitions(:,1))+1;
-dim2=length(nchoosek([1:1:numberparties], n))+dim1-1;
-koalitions(dim1:dim2,1:n)=nchoosek([1:1:numberparties], n)
-end
-%Put all coalitions on binary form
-koalitionsvektor=zeros(length(koalitions),length(koalitions(1,:)));
-for i=1:length(koalitions)
-    for k=1:length(koalitions(1,:))
-        if koalitions(i, k)>0
-        koalitionsvektor(i, koalitions(i, k))=1;
+for counter1=0:1:1
+    for counter2=0:1:1
+        for counter3=0:1:1
+            for counter4=0:1:1
+                for counter5=0:1:1
+                    for counter6=0:1:1
+                        for counter7=0:1:1
+                            for counter8=0:1:1
+                                for counter9=0:1:1
+                                    for counter10=0:1:1
+                                        koalitions(n,:)=[counter1 counter2 counter3 counter4 counter5 counter6 counter7 counter8 counter9 counter10];
+                                        n=n+1;
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
         end
     end
 end
+    
+koalitions=koalitions(:,1:numberparties)
+koalitions=unique(koalitions,'rows')
+
 
 %Add seats to each coalition
-koalitionsvektor(:,10)=koalitionsvektor*mandater
+koalitions(:,numberparties+1)=koalitions*mandater
 
 %Remove coalitions with insufficient seats
-koalitionsvektor=koalitionsvektor(koalitionsvektor(:,10)>=border,:)
+koalitions=koalitions(koalitions(:,numberparties+1)>=border,:)
 
 %Check if smallest party can be removed and still have a majority
 %if so, remove coalition
-for i=1:length(koalitionsvektor(:,1))
-temp=transpose(koalitionsvektor(i,1:9)).*mandater;
+for i=1:length(koalitions(:,1))
+temp=transpose(koalitions(i,1:numberparties)).*mandater;
 smallest=min(temp(temp>0));
-koalitionsvektor(i,11)=koalitionsvektor(i,10)-smallest;
+koalitions(i,numberparties+2)=koalitions(i,numberparties+1)-smallest;
 end
-koalitionsvektor=koalitionsvektor(koalitionsvektor(:,11)<border,:)
+koalitions=koalitions(koalitions(:,numberparties+2)<border,:)
 
-koalitionsvektor=koalitionsvektor(:,1:10);
+koalitions=koalitions(:,1:numberparties+1);
 
-xlswrite('ft_na.xls', koalitionsvektor, 'flertal', 'B2')
+xlswrite('ft_na.xls', koalitions, 'flertal', 'B2')
